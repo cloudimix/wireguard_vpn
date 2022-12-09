@@ -1,0 +1,59 @@
+---
+- name: Wait for port 22 to come online
+  hosts: all
+  gather_facts: false
+  pre_tasks:
+    - name: Waiting for port 22...
+      wait_for_connection:
+        delay: 5
+        connect_timeout: 10
+        timeout: 600
+
+- name: Change permissions of the wireguard directory
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Dar
+      file:
+        path: /etc/wireguard/
+        state: directory
+        recurse: true
+        mode: 0777
+
+- name: Install wireguard
+  hosts: all
+  become: true
+  tasks:
+    - name: Update apt-get repo and cache
+      apt:
+        update_cache: true
+        force_apt_get: true
+        cache_valid_time: 3600
+
+    - name: Copy wireguard-install.sh
+      template:
+        src: wireguard_install.sh.j2
+        dest: /home/{{ansible_user}}/wireguard_install.sh
+        mode: 0750
+
+    - name: wireguard installation
+      command: bash wireguard_install.sh
+      args:
+        creates: /etc/systemd/system/multi-user.target.wants/wg-quick@wg0.service
+
+    - name: Download config file
+      fetch:
+        src: /home/{{ansible_user}}/{{server_wg_nic}}-client-{{client_name}}.conf
+        dest: /etc/wireguard/{{server_wg_nic}}.conf
+        flat: true
+
+- name: Change permissions of the wireguard directory
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Restableser
+      file:
+        path: /etc/wireguard/
+        state: directory
+        recurse: true
+        mode: 0700
