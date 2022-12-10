@@ -1,0 +1,15 @@
+---
+ansible_user                 : ubuntu
+ansible_ssh_private_key_file : ~/.ssh/id_rsa
+
+#Wireguard configuration data:
+wg_port: 51820
+client_name: client
+server_pub_nic: ens3
+server_wg_nic: wg0
+server_wg_ipv4: 10.66.66.1
+server_wg_ipv6: fd42:42:42::1
+dns_1: 94.140.14.14
+dns_2: 94.140.15.15
+client_wg_ipv4: 10.66.66.2
+client_wg_ipv6: fd42:42:42::2
